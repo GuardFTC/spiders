@@ -22,16 +22,16 @@ func main() {
 		wg.Add(1)
 
 		//5.创建协程异步运行爬虫
-		go func() {
+		go func(spider spider.Spider) {
 
 			//6.确保最终释放锁
 			defer wg.Done()
 
 			//7.打印起止日志，运行爬虫
-			log.Printf("爬虫:%s 开始运行", _spider.GetName())
-			_spider.Run()
-			log.Printf("爬虫:%s 运行完毕", _spider.GetName())
-		}()
+			log.Printf("爬虫:%s 开始运行", spider.GetName())
+			spider.Run()
+			log.Printf("爬虫:%s 运行完毕", spider.GetName())
+		}(_spider)
 	}
 
 	//8.阻塞等待所有爬虫爬取完毕

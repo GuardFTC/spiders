@@ -34,11 +34,11 @@ func NewTop250MovieSpider() *Top250MovieSpider {
 	}
 
 	//4.获取并设置详情页采集器
-	infoCollection := getInfoCollection(top250MovieSpider)
+	infoCollection := getTop250MovieInfoCollection(top250MovieSpider)
 	top250MovieSpider.infoCollection = infoCollection
 
 	//5.获取并设置列表页采集器
-	listCollection := getListCollection(infoCollection, top250MovieSpider)
+	listCollection := getTop250MovieListCollection(infoCollection, top250MovieSpider)
 	top250MovieSpider.listCollection = listCollection
 
 	//6.返回
@@ -100,7 +100,7 @@ func getTop250MovieUrls() []string {
 }
 
 // GetListCollection 获取列表页采集器
-func getListCollection(infoCollection *colly.Collector, top250MovieSpider *Top250MovieSpider) *colly.Collector {
+func getTop250MovieListCollection(infoCollection *colly.Collector, top250MovieSpider *Top250MovieSpider) *colly.Collector {
 
 	//1.创建采集器
 	listCollection := colly.NewCollector(
@@ -155,8 +155,8 @@ func getListCollection(infoCollection *colly.Collector, top250MovieSpider *Top25
 	return listCollection
 }
 
-// GetInfoCollection 获取详情页采集器
-func getInfoCollection(top250MovieSpider *Top250MovieSpider) *colly.Collector {
+// getTop250MovieInfoCollection 获取详情页采集器
+func getTop250MovieInfoCollection(top250MovieSpider *Top250MovieSpider) *colly.Collector {
 
 	//1.创建采集器
 	infoCollection := colly.NewCollector(

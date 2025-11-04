@@ -12,3 +12,9 @@ const top250MovieURL = "https://movie.douban.com/top250?start=%v"
 
 // top250MovieCollectionName 豆瓣电影top250集合名称
 const top250MovieCollectionName = "top250_movies"
+
+// top250BookURL 豆瓣图书top250访问URL
+const top250BookURL = "https://book.douban.com/top250?start=%v"
+
+// top250BookCollectionName 豆瓣图书top250集合名称
+const top250BookCollectionName = "top250_books "

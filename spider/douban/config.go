@@ -11,4 +11,4 @@ const defaultDbName = "douban"
 const top250MovieURL = "https://movie.douban.com/top250?start=%v"
 
 // top250MovieCollectionName 豆瓣电影top250集合名称
-const top250MovieCollectionName = "top250_movie"
+const top250MovieCollectionName = "top250_movies"

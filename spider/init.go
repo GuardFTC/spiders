@@ -8,8 +8,9 @@ import (
 )
 
 type Spider interface {
-	GetName() string
-	Run()
+	GetName() string // 获取爬虫名称
+	CanRun() bool    // 判断是否可以运行
+	Run()            // 运行
 }
 
 // Init 初始化所有爬虫
@@ -45,9 +46,13 @@ func RunSpiders(spiders []Spider) {
 			defer wg.Done()
 
 			//6.打印起止日志，运行爬虫
-			log.Printf("[ %s ] 开始运行", spider.GetName())
-			spider.Run()
-			log.Printf("[ %s ] 运行完毕", spider.GetName())
+			if spider.CanRun() {
+				log.Printf("[ %s ] 开始运行", spider.GetName())
+				spider.Run()
+				log.Printf("[ %s ] 运行完毕", spider.GetName())
+			} else {
+				log.Printf("[ %s ] 运行条件不满足", spider.GetName())
+			}
 		}(_spider)
 	}
 

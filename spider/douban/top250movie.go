@@ -30,6 +30,7 @@ func NewTop250MovieSpider() *Top250MovieSpider {
 	top250MovieSpider := &Top250MovieSpider{
 		urls:   urls,
 		movies: movies,
+		canRun: true,
 	}
 
 	//4.获取并设置详情页采集器
@@ -37,7 +38,7 @@ func NewTop250MovieSpider() *Top250MovieSpider {
 	top250MovieSpider.infoCollection = infoCollection
 
 	//5.获取并设置列表页采集器
-	listCollection := getListCollection(infoCollection)
+	listCollection := getListCollection(infoCollection, top250MovieSpider)
 	top250MovieSpider.listCollection = listCollection
 
 	//6.返回
@@ -51,11 +52,17 @@ type Top250MovieSpider struct {
 	infoCollection *colly.Collector //详情页采集器
 	movies         []*Movie         //电影列表
 	mu             sync.Mutex       //锁
+	canRun         bool             //是否可以运行
 }
 
 // GetName 获取爬虫名称
 func (t *Top250MovieSpider) GetName() string {
 	return "豆瓣top250电影爬虫"
+}
+
+// CanRun 获取是否可以运行
+func (t *Top250MovieSpider) CanRun() bool {
+	return t.canRun
 }
 
 // Run 运=运行爬虫，爬取数据
@@ -70,7 +77,8 @@ func (t *Top250MovieSpider) Run() {
 
 	//2.保存数据到Mongo
 	if err := _mongo.DeleteAndSaveData(t.movies, defaultDbName, top250MovieCollectionName); err != nil {
-		log.Fatalf("保存数据异常：%v", err)
+		log.Printf("保存数据异常：%v", err)
+		return
 	}
 }
 
@@ -92,7 +100,7 @@ func getTop250MovieUrls() []string {
 }
 
 // GetListCollection 获取列表页采集器
-func getListCollection(infoCollection *colly.Collector) *colly.Collector {
+func getListCollection(infoCollection *colly.Collector, top250MovieSpider *Top250MovieSpider) *colly.Collector {
 
 	//1.创建采集器
 	listCollection := colly.NewCollector(
@@ -106,7 +114,8 @@ func getListCollection(infoCollection *colly.Collector) *colly.Collector {
 		Delay:       3 * time.Second,
 		RandomDelay: 500 * time.Millisecond,
 	}); err != nil {
-		log.Fatalf("设置limitRule异常：%v", err)
+		log.Printf("设置limitRule异常：%v", err)
+		top250MovieSpider.canRun = false
 	}
 
 	//3.设置请求之前的回调
@@ -161,7 +170,8 @@ func getInfoCollection(top250MovieSpider *Top250MovieSpider) *colly.Collector {
 		Delay:       4 * time.Second,
 		RandomDelay: 700 * time.Millisecond,
 	}); err != nil {
-		log.Fatalf("设置limitRule异常：%v", err)
+		log.Printf("设置limitRule异常：%v", err)
+		top250MovieSpider.canRun = false
 	}
 
 	//3.设置请求之前的回调

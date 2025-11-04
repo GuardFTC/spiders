@@ -53,6 +53,11 @@ type Top250MovieSpider struct {
 	mu             sync.Mutex       //锁
 }
 
+// GetName 获取爬虫名称
+func (t *Top250MovieSpider) GetName() string {
+	return "豆瓣top250电影爬虫"
+}
+
 // Run 运=运行爬虫，爬取数据
 func (t *Top250MovieSpider) Run() {
 

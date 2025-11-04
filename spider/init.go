@@ -1,9 +1,12 @@
 // Package spider @Author:冯铁城 [17615007230@163.com] 2025-11-03 14:19:45
 package spider
 
-import "spiders/spider/douban"
+import (
+	"spiders/spider/douban"
+)
 
 type Spider interface {
+	GetName() string
 	Run()
 }
 

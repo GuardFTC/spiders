@@ -8,7 +8,7 @@ import (
 )
 
 // DeleteAndSaveData 删除并保存数据
-func DeleteAndSaveData[T any](data []T, collectionName string, dbName string) error {
+func DeleteAndSaveData[T any](data []T, dbName string, collectionName string) error {
 
 	//1.声明数据库以及集合
 	db := client.getClient().Database(dbName)

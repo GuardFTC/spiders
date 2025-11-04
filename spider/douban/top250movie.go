@@ -69,7 +69,7 @@ func (t *Top250MovieSpider) Run() {
 	}
 
 	//2.保存数据到Mongo
-	if err := _mongo.DeleteAndSaveData(t.movies, "top250_movies", "douban"); err != nil {
+	if err := _mongo.DeleteAndSaveData(t.movies, defaultDbName, top250MovieCollectionName); err != nil {
 		log.Fatalf("保存数据异常：%v", err)
 	}
 }

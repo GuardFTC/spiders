@@ -4,5 +4,11 @@ package douban
 // defaultUserAgent 默认UserAgent
 const defaultUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0"
 
+// defaultDbName 数据库名称
+const defaultDbName = "douban"
+
 // top250MovieURL 豆瓣电影top250访问URL
 const top250MovieURL = "https://movie.douban.com/top250?start=%v"
+
+// top250MovieCollectionName 豆瓣电影top250集合名称
+const top250MovieCollectionName = "top250_movie"

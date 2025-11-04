@@ -211,11 +211,11 @@ type Movie struct {
 	Writers      map[string]string `json:"writers"`      // 编剧: 姓名 -> URL
 	Actors       map[string]string `json:"actors"`       // 主演: 姓名 -> URL
 	Genres       []string          `json:"genres"`       // 类型列表
-	Country      string            `json:"country"`      // 制片国家/地区
+	Country      []string          `json:"country"`      // 制片国家/地区
 	Language     []string          `json:"language"`     // 语言
 	ReleaseDates []string          `json:"releaseDates"` // 上映日期（多地）
 	Runtime      string            `json:"runtime"`      // 片长
-	Alias        string            `json:"alias"`        // 又名
+	Alias        []string          `json:"alias"`        // 又名
 	IMDb         string            `json:"imdb"`         // IMDb 编号
 	Score        string            `json:"score"`        // 评分
 	ScoreCount   string            `json:"scoreCount"`   // 评分人数（含“人评价”或纯数字）
@@ -229,8 +229,10 @@ func NewMovie() *Movie {
 		Writers:      make(map[string]string),
 		Actors:       make(map[string]string),
 		Genres:       make([]string, 0),
+		Country:      make([]string, 0),
 		Language:     make([]string, 0),
 		ReleaseDates: make([]string, 0),
+		Alias:        make([]string, 0),
 	}
 }
 
@@ -292,7 +294,7 @@ func parseMovie(element *colly.HTMLElement) *Movie {
 
 	//9.解析制片国家/地区
 	element.ForEach("span:contains('制片国家/地区:')", func(i int, e *colly.HTMLElement) {
-		movie.Country = strings.TrimSpace(e.DOM.Get(0).NextSibling.Data)
+		movie.Country = strings.Split(strings.TrimSpace(e.DOM.Get(0).NextSibling.Data), " / ")
 	})
 
 	//10.解析语言
@@ -316,7 +318,7 @@ func parseMovie(element *colly.HTMLElement) *Movie {
 
 	//13.解析又名
 	element.ForEach("span:contains('又名:')", func(i int, e *colly.HTMLElement) {
-		movie.Alias = strings.TrimSpace(e.DOM.Get(0).NextSibling.Data)
+		movie.Alias = strings.Split(strings.TrimSpace(e.DOM.Get(0).NextSibling.Data), " / ")
 	})
 
 	//14.解析IMDb

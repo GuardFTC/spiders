@@ -45,9 +45,9 @@ func RunSpiders(spiders []Spider) {
 			defer wg.Done()
 
 			//6.打印起止日志，运行爬虫
-			log.Printf("爬虫:%s 开始运行", spider.GetName())
+			log.Printf("[ %s ] 开始运行", spider.GetName())
 			spider.Run()
-			log.Printf("爬虫:%s 运行完毕", spider.GetName())
+			log.Printf("[ %s ] 运行完毕", spider.GetName())
 		}(_spider)
 	}
 

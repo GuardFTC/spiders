@@ -3,7 +3,6 @@ package _mongo
 
 import (
 	"log"
-	"spiders/db/_mongo/client"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -11,29 +10,25 @@ import (
 // DeleteAndSaveData 删除并保存数据
 func DeleteAndSaveData[T any](data []T, collectionName string, dbName string) error {
 
-	//1.获取客户端
-	mongoClient := client.CreateMongoClient()
-	defer client.CloseMongoClient(mongoClient)
-
-	//2.声明数据库以及集合
-	db := mongoClient.GetClient().Database(dbName)
+	//1.声明数据库以及集合
+	db := client.getClient().Database(dbName)
 	collection := db.Collection(collectionName)
 
-	//3.将 []T 转换为 []interface{}
+	//2.将 []T 转换为 []interface{}
 	var saveDataList []interface{}
 	for _, item := range data {
 		saveDataList = append(saveDataList, item)
 	}
 
-	//4.全量删除数据
-	if _, err := collection.DeleteMany(mongoClient.GetCtx(), bson.M{}); err != nil {
+	//3.全量删除数据
+	if _, err := collection.DeleteMany(client.getCtx(), bson.M{}); err != nil {
 		return err
 	} else {
 		log.Println("delete mongo data success")
 	}
 
-	//5.保存
-	if saveRes, err := collection.InsertMany(mongoClient.GetCtx(), saveDataList); err != nil {
+	//4.保存
+	if saveRes, err := collection.InsertMany(client.getCtx(), saveDataList); err != nil {
 		return err
 	} else {
 		log.Printf("save to mongo success, data count:%v", len(saveRes.InsertedIDs))

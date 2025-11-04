@@ -111,7 +111,7 @@ func getListCollection(infoCollection *colly.Collector) *colly.Collector {
 
 	//3.设置请求之前的回调
 	listCollection.OnRequest(func(request *colly.Request) {
-		log.Printf("开始访问列表页地址：%v", request.URL)
+		log.Printf("开始访问[ Top250电影列表页 ]地址:[%v]", request.URL)
 	})
 
 	//4.定义异常回调
@@ -166,7 +166,7 @@ func getInfoCollection(top250MovieSpider *Top250MovieSpider) *colly.Collector {
 
 	//3.设置请求之前的回调
 	infoCollection.OnRequest(func(request *colly.Request) {
-		log.Printf("开始访问详情页地址：%v", request.URL)
+		log.Printf("开始访问[ 电影详情页 ]地址:[%v]", request.URL)
 	})
 
 	//4.定义异常回调

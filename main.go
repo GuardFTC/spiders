@@ -2,38 +2,19 @@
 package main
 
 import (
-	"log"
+	"spiders/db"
 	"spiders/spider"
-	"sync"
 )
 
 func main() {
 
-	//1.初始化所有爬虫
+	//1.初始化Mongo客户端
+	db.InitDatabase()
+	defer db.CloseDatabase()
+
+	//2.初始化所有爬虫
 	spiders := spider.Init()
 
-	//2.定义wait group
-	var wg sync.WaitGroup
-
-	//3.遍历爬虫集合，异步运行爬取数据
-	for _, _spider := range spiders {
-
-		//4.主协程wg加1
-		wg.Add(1)
-
-		//5.创建协程异步运行爬虫
-		go func(spider spider.Spider) {
-
-			//6.确保最终释放锁
-			defer wg.Done()
-
-			//7.打印起止日志，运行爬虫
-			log.Printf("爬虫:%s 开始运行", spider.GetName())
-			spider.Run()
-			log.Printf("爬虫:%s 运行完毕", spider.GetName())
-		}(_spider)
-	}
-
-	//8.阻塞等待所有爬虫爬取完毕
-	wg.Wait()
+	//3.运行所有爬虫
+	spider.RunSpiders(spiders)
 }

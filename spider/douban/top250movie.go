@@ -65,7 +65,7 @@ func (t *Top250MovieSpider) CanRun() bool {
 	return t.canRun
 }
 
-// Run 运=运行爬虫，爬取数据
+// Run 运行爬虫，爬取数据
 func (t *Top250MovieSpider) Run() {
 
 	//1.遍历访问链接，爬取数据

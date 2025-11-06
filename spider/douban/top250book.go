@@ -8,6 +8,7 @@ import (
 	"spiders/db/_mongo"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gocolly/colly"
 )
@@ -15,33 +16,30 @@ import (
 //-------------------------------------------爬虫结构体相关--------------------------------------------------
 
 // NewTop250BookSpider 创建豆瓣Top250图书爬虫
-func NewTop250BookSpider() *Top250MovieSpider {
+func NewTop250BookSpider() *Top250BookSpider {
 
-	//1.创建电影列表
-	movies := make([]*Movie, 0)
+	//1.创建图书列表
+	books := make([]*Book, 0)
 
 	//2.获取访问链接
-	urls := getTop250MovieUrls()
+	urls := getTop250BookUrls()
 
 	//3.创建结构体实例
-	top250MovieSpider := &Top250MovieSpider{
+	top250BookSpider := &Top250BookSpider{
 		urls:   urls,
-		movies: movies,
+		books:  books,
 		canRun: true,
 	}
 
-	//4.获取并设置详情页采集器
-	infoCollection := getTop250MovieInfoCollection(top250MovieSpider)
-	top250MovieSpider.infoCollection = infoCollection
+	//4.获取并设置列表页采集器
+	listCollection := getTop250BookListCollection(top250BookSpider)
+	top250BookSpider.listCollection = listCollection
 
-	//5.获取并设置列表页采集器
-	listCollection := getTop250MovieListCollection(infoCollection, top250MovieSpider)
-	top250MovieSpider.listCollection = listCollection
-
-	//6.返回
-	return top250MovieSpider
+	//5.返回
+	return top250BookSpider
 }
 
+// Top250BookSpider 豆瓣top250图书爬虫结构体
 type Top250BookSpider struct {
 	urls           []string         //访问链接切片
 	listCollection *colly.Collector //列表页采集器
@@ -60,7 +58,7 @@ func (t *Top250BookSpider) CanRun() bool {
 	return t.canRun
 }
 
-// Run 运=运行爬虫，爬取数据
+// Run 运行爬虫，爬取数据
 func (t *Top250BookSpider) Run() {
 
 	//1.遍历访问链接，爬取数据
@@ -97,6 +95,62 @@ func getTop250BookUrls() []string {
 
 	//5.返回切片
 	return urls
+}
+
+// 获取top250图书数据
+func getTop250BookListCollection(top250BookSpider *Top250BookSpider) *colly.Collector {
+
+	//1.创建采集器
+	listCollection := colly.NewCollector(
+		colly.UserAgent(defaultUserAgent),
+	)
+
+	//2.设置请求限制
+	if err := listCollection.Limit(&colly.LimitRule{
+		DomainGlob:  "movie.douban.com",
+		Parallelism: 1,
+		Delay:       3 * time.Second,
+		RandomDelay: 500 * time.Millisecond,
+	}); err != nil {
+		log.Printf("error setting limit: %v", err)
+		top250BookSpider.canRun = false
+	}
+
+	//3.设置请求之前的回调
+	listCollection.OnRequest(func(request *colly.Request) {
+		log.Printf("开始访问[ Top250书籍列表页 ]地址:[%v]", request.URL)
+	})
+
+	//4.定义异常回调
+	listCollection.OnError(func(response *colly.Response, err error) {
+		log.Printf("访问地址：%v 异常：%v", response.Request.URL, err)
+	})
+
+	//5.定义响应回调
+	listCollection.OnResponse(func(response *colly.Response) {
+		if response.StatusCode < 200 || response.StatusCode >= 400 {
+			log.Printf("访问地址：%v 状态码异常：%v", response.Request.URL, response.StatusCode)
+		}
+	})
+
+	//6.设置HTML解析回调
+	listCollection.OnHTML("div[class='indent']", func(e *colly.HTMLElement) {
+		e.ForEach("table", func(i int, el *colly.HTMLElement) {
+
+			//7.解析图书数据
+			book := parseBook(el)
+
+			//8.加锁
+			top250BookSpider.mu.Lock()
+			defer top250BookSpider.mu.Unlock()
+
+			//9.存入集合
+			top250BookSpider.books = append(top250BookSpider.books, book)
+		})
+	})
+
+	//10.返回采集器
+	return listCollection
 }
 
 //-------------------------------------------被爬数据结构体相关--------------------------------------------------

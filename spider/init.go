@@ -23,7 +23,11 @@ func Init() []Spider {
 	top250MovieSpider := douban.NewTop250MovieSpider()
 	spiders = append(spiders, top250MovieSpider)
 
-	//3.返回切片集合
+	//3.创建豆瓣top250图书爬虫,写入切片
+	top250BookSpider := douban.NewTop250BookSpider()
+	spiders = append(spiders, top250BookSpider)
+
+	//4.返回切片集合
 	return spiders
 }
 

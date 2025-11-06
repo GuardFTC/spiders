@@ -138,7 +138,7 @@ func getTop250BookListCollection(top250BookSpider *Top250BookSpider) *colly.Coll
 		e.ForEach("table", func(i int, el *colly.HTMLElement) {
 
 			//7.解析图书数据
-			book := parseBook(el)
+			book := NewBook(el)
 
 			//8.加锁
 			top250BookSpider.mu.Lock()
@@ -169,8 +169,8 @@ type Book struct {
 	EbookLink   string `json:"ebook_link"`   // 电子版链接
 }
 
-// newBook 创建图书结构体实例
-func parseBook(el *colly.HTMLElement) *Book {
+// NewBook 创建图书结构体实例
+func NewBook(el *colly.HTMLElement) *Book {
 
 	//1.创建图书结构体实例
 	book := new(Book)
